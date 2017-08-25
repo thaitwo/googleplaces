@@ -1,0 +1,42 @@
+.search-container {
+  background: $bluegrey-50;
+  // box-shadow: 0 2px 4px rgba(0,0,0,.12);
+  // left: 0px;
+  // top: 0px;
+  // right: 0;
+  position: fixed;
+  padding: 15px 10px;
+  text-align: center;
+  width: 380px;
+  z-index: 10;
+
+  input {
+    border: none;
+    border-radius: 2px;
+    float: left;
+    font-family: $font-primary;
+    font-size: 16px;
+    height: 36px;
+    outline: none;
+    padding: 0 8px;
+    width: 276px;
+  }
+
+  .search-button {
+    background: $blue-600;
+    border: none;
+    border-radius: 2px;
+    color: white;
+    cursor: pointer;
+    font-family: $font-primary;
+    font-size: 14px;
+    height: 36px;
+    padding: 0 16px;
+    text-transform: uppercase;
+    transition: all .3s;
+
+    &:hover {
+      background: $blue-700;
+    }
+  }
+}

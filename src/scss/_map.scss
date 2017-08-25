@@ -1,0 +1,11 @@
+#map {
+    margin-left: 400px;
+}
+
+.data-container {
+  box-shadow: 4px 0 4px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.24);
+  height: 100%;
+  position: fixed;
+  width: 400px;
+  z-index: 10;
+}

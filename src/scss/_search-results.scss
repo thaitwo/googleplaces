@@ -1,0 +1,30 @@
+.data-container {
+  overflow: auto;
+}
+
+.place-container {
+  margin-top: 70px;
+
+  li {
+    border-bottom: 1px solid rgba($bluegrey-900, .05);
+    font-family: $font-primary;
+    padding: 20px;
+  }
+
+  .result-title {
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .result-rating {
+    color: $blue-600;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .result-address {
+    color: $bluegrey-300;
+    font-size: 13px;
+    font-weight: 300;
+  }
+}
