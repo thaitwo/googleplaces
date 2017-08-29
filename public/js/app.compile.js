@@ -108,15 +108,8 @@ var App = function () {
       // CREATE GOOGLE MAP
     };this.map = new google.maps.Map(this.mapContainer, this.mapOptions);
 
-    // Autocomplete Options
-    // this.acOptions = {
-    //   types: ['geocode']
-    // }
-
-
     // SEARCH AUTOCOMPLETE
     this.autocomplete = new google.maps.places.Autocomplete(this.searchContainer);
-    // console.log('auto', this.autocomplete);
     this.autocomplete.bindTo('bounds', this.map);
 
     // MARKER
@@ -125,9 +118,6 @@ var App = function () {
     };
 
     this.infoWindow = new google.maps.InfoWindow();
-    this.marker = new google.maps.Marker({
-      map: this.map
-    });
     // this.marker.setMap(this.map);
 
 
@@ -142,8 +132,8 @@ var App = function () {
       var place = _this.autocomplete.getPlace();
 
       _this.request.query = place.name;
-      console.log('query', _this.request.query);
-      console.log('request', _this.request);
+      // console.log('query', this.request.query);
+      // console.log('request', this.request);
 
       if (!place.geometry) {
         return;
@@ -155,45 +145,16 @@ var App = function () {
         _this.map.setCenter(place.geometry.location);
         _this.map.setZoom(17);
       }
-
-      _this.marker.setPosition(place.geometry.location);
-      _this.infoWindow.setContent('<div><strong>' + place.name + '</strong><br>');
-      _this.infoWindow.open(_this.map, _this.marker);
-
-      google.maps.event.addListener(_this.marker, 'click', function (e) {
-        _this.infoWindow.open(_this.map, _this.marker);
-      });
     });
 
     // TEXT SEARCH
     this.service = new google.maps.places.PlacesService(this.map);
-    // this.service.textSearch(this.request, this.callback.bind(this));
-
-
-    // INFO WINDOW
-    // this.infoWindowOptions = {
-    //   content: 'Moscone Is Here!'
-    // };
-
-    // this.infoWindow = new google.maps.InfoWindow(this.infoWindowOptions);
-
-    // google.maps.event.addListener(this.marker,'click', (e) => {
-
-    //   this.infoWindow.open(this.map, this.marker);
-    // });
-
-
-    // this.renderMap();
-
-
-    // this.infowindow = new google.maps.InfoWindow();
-
-    // this.defaultBounds = new google.maps.LatLngBounds(
-    //   new google.maps.LatLng(-33.8902, 151.1759),
-    //   new google.maps.LatLng(-33.8474, 151.2631));
 
     this.activateSearch();
   }
+
+  // ACTIVATE SEARCH
+
 
   _createClass(App, [{
     key: 'activateSearch',
@@ -206,44 +167,69 @@ var App = function () {
           // console.log('value', event.target.value);
           _this2.request.query = query;
 
-          // this.clearMarkers();
-
           // this.map = new google.maps.Map(this.mapContainer, this.mapOptions);
           _this2.service.textSearch(_this2.request, _this2.callback.bind(_this2));
         }
       });
     }
+
+    // CLEAR MARKERS FROM MARKERS ARRAY
+
   }, {
     key: 'clearMarkers',
     value: function clearMarkers() {
-      setMapOnAll(null);
+      for (var i = 0; i < this.markers.length; i++) {
+        this.markers[i].setMap(null);
+      }
     }
+
+    // ADD MARKERS TO MARKERS ARRAY
+
   }, {
-    key: 'renderMap',
-    value: function renderMap() {
-      // Render map
-      this.map = new google.maps.Map(document.getElementById('map'), {
-        center: this.pyrmont,
-        zoom: 15
+    key: 'addMarker',
+    value: function addMarker(place) {
+      var _this3 = this;
+
+      var location = place.geometry.location;
+      var name = place.name;
+
+      var marker = new google.maps.Marker({
+        position: location,
+        map: this.map
+      });
+
+      this.markers.push(marker);
+
+      google.maps.event.addListener(marker, 'click', function () {
+        _this3.infoWindow.setContent(name);
+        _this3.infoWindow.open(_this3.map, marker);
       });
     }
   }, {
     key: 'callback',
     value: function callback(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
+        // remove all markers from array
+        this.clearMarkers();
+
+        this.$placeContainer.empty();
+
         for (var i = 0; i < results.length; i++) {
-          this.createMarker(results[i]);
+          this.addMarker(results[i]);
+          // this.createMarker(results[i]);
           this.renderPlace(results[i]);
         }
       }
-      console.log('results', results);
     }
   }, {
     key: 'renderPlaceContainer',
     value: function renderPlaceContainer() {
-      this.$dataContainer.append('<ul class="place-container"></ul>');
-      this.$placeContainer = (0, _jquery2.default)('.place-container');
+      this.$dataContainer.append('<div class="place-container"><ul class="place-list"></ul></div>');
+      this.$placeContainer = (0, _jquery2.default)('.place-list');
     }
+
+    // RENDER PLACES INTO PLACE CONTAINER
+
   }, {
     key: 'renderPlace',
     value: function renderPlace(place) {
@@ -251,29 +237,28 @@ var App = function () {
       var rating = place.rating;
       var address = place.formatted_address;
 
-      var block = '\n      <li>\n        <h3 class="result-title">' + name + '</h3>\n        <div class="result-rating">' + rating + '</div>\n        <p class="result-address">' + address + '</p>\n      </li>\n    ';
+      var block = '\n      <li>\n        <h3 class="result-title">' + name + '</h3>\n        <div class="result-rating">' + rating + ' Stars</div>\n        <p class="result-address">' + address + '</p>\n      </li>\n    ';
 
       this.$placeContainer.append(block);
     }
-  }, {
-    key: 'createMarker',
-    value: function createMarker(place) {
-      var _this3 = this;
 
-      var that = this;
+    // createMarker(place) {
+    //   const placeLocation = place.geometry.location;
+    //   const marker = new google.maps.Marker({
+    //     map: this.map,
+    //     position: placeLocation
+    //   });
 
-      var placeLocation = place.geometry.location;
-      var marker = new google.maps.Marker({
-        map: this.map,
-        position: placeLocation
-      });
-      // console.log(marker);
+    //   this.markers.push(marker);
 
-      google.maps.event.addListener(marker, 'click', function () {
-        _this3.infoWindow.setContent(place.name);
-        _this3.infoWindow.open(map, marker);
-      });
-    }
+    //   marker.setPosition(place.geometry.location);
+
+    //   google.maps.event.addListener(marker, 'click', () => {
+    //     this.infoWindow.setContent(place.name);
+    //     this.infoWindow.open(map, marker);
+    //   });
+    // }
+
   }]);
 
   return App;
